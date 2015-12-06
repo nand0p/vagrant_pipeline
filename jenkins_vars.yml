@@ -1,0 +1,37 @@
+install_tools:
+ - gcc
+ - java
+ - jenkins
+ - python-pip 
+ - python-devel
+ - lsof
+ - tcpdump
+ - strace
+ - tree
+ - htop
+
+install_pip:
+ - ansible
+ - httplib2
+
+install_jenkins:
+  - envinject
+  - python
+  - job-dsl
+  - git
+  - github
+  - git-client
+  - scm-api
+  - parameterized-trigger
+  - mapdb-api
+  - rebuild
+  - conditional-buildstep
+  - token-macro
+  - plain-credentials
+  - github-api
+
+jenkins:
+  port:
+    9999
+  host:
+    localhost

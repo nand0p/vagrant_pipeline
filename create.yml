@@ -1,0 +1,156 @@
+---
+- hosts: all
+  tasks:
+    - include_vars: jenkins_vars.yml
+
+    - name: stat jenkins repo
+      stat:
+         path: "/etc/yum.repos.d/jenkins.repo"
+      register: jenkins_repo
+      sudo: yes
+
+    - name: get jenkins repo
+      get_url:
+        url: "http://pkg.jenkins-ci.org/redhat/jenkins.repo"
+        dest: "/root/jenkins.repo"
+      sudo: yes
+      when: not jenkins_repo.stat.exists
+      register: jenkins_repo_download
+
+    - name: install jenkins repo
+      command: "mv -fv /root/jenkins.repo /etc/yum.repos.d"
+      sudo: yes
+      when: jenkins_repo_download.changed
+
+    - name: get jenkins rpm key
+      rpm_key:
+        key: http://pkg.jenkins-ci.org/redhat/jenkins-ci.org.key
+        state: present
+      sudo: yes
+      when: jenkins_repo_download.changed
+
+    - name: install epel
+      yum:
+        pkg: epel-release
+        state: installed
+      sudo: yes
+
+    - name: install dev tools
+      yum:
+        pkg: "{{ item }}"
+        state: installed
+      with_items: install_tools
+      sudo: yes
+
+    - name: install dev pip dependencies
+      pip:
+        name: "{{ item }}"
+        state: present
+      with_items: install_pip
+      sudo: yes
+
+    - name: write out jenkins sysconfig
+      template:
+        src: "templates/sysconfig.j2"
+        dest: "/etc/sysconfig/jenkins"
+        mode: 0600
+      sudo: yes
+
+    - name: jenkins user keys
+      user:
+        name: "jenkins"
+        shell: "/bin/bash"
+        generate_ssh_key: "yes"
+        ssh_key_bits: 2048
+        ssh_key_file: "/var/lib/jenkins/.ssh/id_rsa"
+      sudo: yes
+      register: jenkins_ssh_keys
+
+    - debug: var=jenkins_ssh_keys
+      when: debug_on is defined and debug_on
+
+    - name: jenkins init
+      service:
+        name: jenkins
+        state: started
+        enabled: true
+      sudo: yes
+      register: jenkins_init
+
+    - pause: seconds=10
+      when: jenkins_init.changed
+
+    - name: install jenkins plugins
+      get_url:
+        dest: "/var/lib/jenkins/plugins/{{ item }}.jpi"
+        url: "https://updates.jenkins-ci.org/latest/{{ item }}.hpi"
+        owner: jenkins
+        group: jenkins
+        mode: 0644
+      sudo: yes
+      sudo_user: jenkins
+      with_items: install_jenkins
+      register: jenkins_plugins
+      when: jenkins_init.changed
+
+    - name: jenkins restart
+      service:
+        name: jenkins
+        state: restarted
+        enabled: true
+      sudo: yes
+      register: jenkins_restart
+      when: jenkins_init.changed
+
+    - pause: seconds=10
+      when: jenkins_init.changed
+
+    - name: write out jenkins dsl
+      template:
+        src: templates/jobs.dsl.j2
+        dest: /tmp/jenkins-jobs.dsl
+        mode: 0644
+      sudo: yes
+      sudo_user: jenkins
+      when: jenkins_init.changed
+
+    - name: write out jenkins seed
+      template:
+        src: templates/seed.xml.j2
+        dest: /tmp/jenkins-seed.xml
+        mode: 0644
+      sudo: yes
+      sudo_user: jenkins
+      when: jenkins_init.changed
+
+    - name: fetch seed xml
+      fetch:
+        src: /tmp/jenkins-seed.xml
+        dest: /tmp/jenkins-seed-local.xml
+        flat: yes
+      when: jenkins_init.changed
+
+    - name: jenkins load seed job
+      uri:
+        url: http://{{ jenkins.host }}:{{ jenkins.port }}/createItem?name=seed
+        method: POST
+        body: "{{ lookup('file', '/tmp/jenkins-seed-local.xml') }}"
+        HEADER_Content-Type: "application/xml"
+        status_code: 200,201
+      register: jenkins_seed_load
+      when: jenkins_init.changed
+
+    - debug: var=jenkins_seed_load
+      when: debug_on is defined and debug_on
+
+    - name: jenkins build seed job
+      uri:
+        url: http://{{ jenkins.host }}:{{ jenkins.port }}/job/seed/build
+        method: GET
+        status_code: 200,201
+      register: jenkins_seed_build
+      ignore_errors: true
+
+    - debug: var=jenkins_seed_build
+      when: debug_on is defined and debug_on
+
