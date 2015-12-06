@@ -5,20 +5,20 @@
 
     - name: stat jenkins repo
       stat:
-         path: "/etc/yum.repos.d/jenkins.repo"
+         path: /etc/yum.repos.d/jenkins.repo
       register: jenkins_repo
       sudo: yes
 
     - name: get jenkins repo
       get_url:
-        url: "http://pkg.jenkins-ci.org/redhat/jenkins.repo"
-        dest: "/root/jenkins.repo"
+        url: http://pkg.jenkins-ci.org/redhat/jenkins.repo
+        dest: /root/jenkins.repo
       sudo: yes
       when: not jenkins_repo.stat.exists
       register: jenkins_repo_download
 
     - name: install jenkins repo
-      command: "mv -fv /root/jenkins.repo /etc/yum.repos.d"
+      command: mv -fv /root/jenkins.repo /etc/yum.repos.d
       sudo: yes
       when: jenkins_repo_download.changed
 
@@ -51,23 +51,30 @@
 
     - name: write out jenkins sysconfig
       template:
-        src: "templates/sysconfig.j2"
-        dest: "/etc/sysconfig/jenkins"
+        src: templates/sysconfig.j2
+        dest: /etc/sysconfig/jenkins
         mode: 0600
       sudo: yes
 
     - name: jenkins user keys
       user:
-        name: "jenkins"
-        shell: "/bin/bash"
-        generate_ssh_key: "yes"
+        name: jenkins
+        shell: /bin/bash
+        generate_ssh_key: yes
         ssh_key_bits: 2048
-        ssh_key_file: "/var/lib/jenkins/.ssh/id_rsa"
+        ssh_key_file: "{{ jenkins.home }}/.ssh/id_rsa"
       sudo: yes
       register: jenkins_ssh_keys
 
     - debug: var=jenkins_ssh_keys
       when: debug_on is defined and debug_on
+
+    - name: disable host key checking
+      template:
+        src: templates/ssh_config.j2
+        dest: "{{ jenkins.home }}/.ssh/config"
+      sudo: true
+      sudo_user: jenkins
 
     - name: jenkins init
       service:
@@ -82,7 +89,7 @@
 
     - name: install jenkins plugins
       get_url:
-        dest: "/var/lib/jenkins/plugins/{{ item }}.jpi"
+        dest: "{{ jenkins.home }}/plugins/{{ item }}.jpi"
         url: "https://updates.jenkins-ci.org/latest/{{ item }}.hpi"
         owner: jenkins
         group: jenkins
