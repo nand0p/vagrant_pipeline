@@ -1,0 +1,38 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+VAGRANTFILE_API_VERSION = "2"
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+  config.vm.define "pipeline-chef" do |pipeline|
+    pipeline.berkshelf.enabled = true
+    pipeline.vm.box = "centos/7"
+    pipeline.vm.hostname = "pipeline-chef"
+    pipeline.vm.network "forwarded_port", guest: 9999, host: 9999
+    pipeline.vm.synced_folder ".", "sync", disabled: true
+    pipeline.vm.provider "virtualbox" do |vbox|
+      vbox.memory = "1024"
+    end
+    pipeline.vm.provision "chef_zero" do |chef|
+      chef.cookbooks_path = "/home/vagrant/sync/cookbooks"
+      chef.json = {
+        'java' =>  {
+          'jdk_version' => '7'
+        },
+        'vagrant_jenkins_wrapper' => {
+          'pipeline' => 'hex7'
+        }
+      }
+      chef.run_list = [
+        'recipe[java]',
+        'recipe[jenkins::master]',
+        'recipe[vagrant_jenkins_wrapper]',
+        'recipe[vagrant_jenkins_wrapper::deps]',
+        'recipe[vagrant_jenkins_wrapper::keys]',
+        'recipe[vagrant_jenkins_wrapper::plugins]',
+        'recipe[vagrant_jenkins_wrapper::jobs]',
+        'recipe[vagrant_jenkins_wrapper::restart]',
+      ]
+    end
+  end
+end

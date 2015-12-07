@@ -1,6 +1,6 @@
-JENKINS_HOME="/var/lib/jenkins"
+JENKINS_HOME="{{ jenkins.home }}"
 JENKINS_JAVA_CMD=""
-JENKINS_USER="jenkins"
+JENKINS_USER="{{ jenkins.user }}"
 #JENKINS_INSTALL_SKIP_CHOWN="false"
 JENKINS_JAVA_OPTIONS="-Djava.awt.headless=true"
 JENKINS_PORT="{{ jenkins.port }}"

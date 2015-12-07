@@ -38,3 +38,5 @@ jenkins:
     localhost
   home:
     /var/lib/jenkins
+  user:
+    jenkins

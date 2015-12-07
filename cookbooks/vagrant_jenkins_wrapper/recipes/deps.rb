@@ -1,0 +1,8 @@
+package "epel-release"
+package "tree"
+package "tcpdump"
+package "python-pip"
+package "python-yaml"
+package "python-argparse"
+package "python-gnupg"
+package "bind-utils"

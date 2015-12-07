@@ -17,13 +17,13 @@
   <builders>
     <hudson.tasks.Shell>
       <command>
-cat vagrant_pipeline/files/seed.xml
-cat vagrant_pipeline/files/jobs.dsl
+cat files/seed.xml
+cat files/jobs.dsl
 cat /var/lib/jenkins/.ssh/id_rsa.pub
       </command>
     </hudson.tasks.Shell>
     <javaposse.jobdsl.plugin.ExecuteDslScripts plugin="job-dsl@1.39">
-      <targets>vagrant_pipeline/files/jobs.dsl</targets>
+      <targets>files/jobs.dsl</targets>
       <usingScriptText>false</usingScriptText>
       <ignoreExisting>false</ignoreExisting>
       <removedJobAction>IGNORE</removedJobAction>
@@ -34,5 +34,31 @@ cat /var/lib/jenkins/.ssh/id_rsa.pub
   </builders>
   <publishers/>
   <buildWrappers/>
+  <scm class="hudson.plugins.git.GitSCM">
+      <userRemoteConfigs>
+          <hudson.plugins.git.UserRemoteConfig>
+              <url>https://github.com/nand0p/vagrant_pipeline.git</url>
+          </hudson.plugins.git.UserRemoteConfig>
+      </userRemoteConfigs>
+      <branches>
+          <hudson.plugins.git.BranchSpec>
+              <name>**</name>
+          </hudson.plugins.git.BranchSpec>
+      </branches>
+      <configVersion>2</configVersion>
+      <disableSubmodules>false</disableSubmodules>
+      <recursiveSubmodules>false</recursiveSubmodules>
+      <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
+      <authorOrCommitter>false</authorOrCommitter>
+      <clean>false</clean>
+      <wipeOutWorkspace>false</wipeOutWorkspace>
+      <pruneBranches>false</pruneBranches>
+      <remotePoll>false</remotePoll>
+      <ignoreNotifyCommit>false</ignoreNotifyCommit>
+      <gitTool>Default</gitTool>
+      <skipTag>true</skipTag>
+      <browser class="hudson.plugins.git.browser.GithubWeb">
+          <url>https://github.com/nand0p/vagrant_pipeline/</url>
+      </browser>
+  </scm>
 </project>
-

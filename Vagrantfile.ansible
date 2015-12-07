@@ -1,0 +1,23 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+VAGRANTFILE_API_VERSION = "2"
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+  config.vm.define "pipeline-ansible" do |pipeline|
+    pipeline.vm.box = "centos/7"
+    pipeline.vm.hostname = "pipeline-ansible"
+    pipeline.vm.network "forwarded_port", guest: 9999, host: 9999
+    #pipeline.vm.synced_folder ".", "sync", disabled: true
+    pipeline.vm.provider "virtualbox" do |vbox|
+      vbox.memory = "1024"
+    end
+    pipeline.vm.provision "ansible" do |ansible|
+      ansible.playbook = "create.yml"
+      ansible.verbose = 'vvvv'
+      ansible.extra_vars = {
+        debug_on: true
+      }
+    end
+  end
+end

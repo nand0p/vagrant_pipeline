@@ -58,7 +58,7 @@
 
     - name: jenkins user keys
       user:
-        name: jenkins
+        name: "{{ jenkins.user }}"
         shell: /bin/bash
         generate_ssh_key: yes
         ssh_key_bits: 2048
@@ -70,11 +70,11 @@
       when: debug_on is defined and debug_on
 
     - name: disable host key checking
-      template:
-        src: templates/ssh_config.j2
+      file:
+        src: files/ssh_config.j2
         dest: "{{ jenkins.home }}/.ssh/config"
       sudo: true
-      sudo_user: jenkins
+      sudo_user: "{{ jenkins.user }}"
 
     - name: jenkins init
       service:
@@ -91,11 +91,8 @@
       get_url:
         dest: "{{ jenkins.home }}/plugins/{{ item }}.jpi"
         url: "https://updates.jenkins-ci.org/latest/{{ item }}.hpi"
-        owner: jenkins
-        group: jenkins
-        mode: 0644
       sudo: yes
-      sudo_user: jenkins
+      sudo_user: "{{ jenkins.user }}"
       with_items: install_jenkins
       register: jenkins_plugins
       when: jenkins_init.changed
