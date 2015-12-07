@@ -1,1 +1,1 @@
-Vagrantfile.chef
+Vagrantfile.ansible

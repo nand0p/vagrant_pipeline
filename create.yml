@@ -70,9 +70,10 @@
       when: debug_on is defined and debug_on
 
     - name: disable host key checking
-      file:
-        src: files/ssh_config.j2
+      template:
+        src: templates/ssh_config.j2
         dest: "{{ jenkins.home }}/.ssh/config"
+        mode: 0400
       sudo: true
       sudo_user: "{{ jenkins.user }}"
 
