@@ -51,7 +51,7 @@
 
     - name: write out jenkins sysconfig
       template:
-        src: templates/sysconfig.j2
+        src: templates/sysconfig_jenkins.j2
         dest: /etc/sysconfig/jenkins
         mode: 0600
       sudo: yes

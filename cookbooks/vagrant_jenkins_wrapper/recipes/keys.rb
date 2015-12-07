@@ -4,7 +4,7 @@ directory "/var/lib/jenkins/.ssh" do
   action :create
 end
 template "/var/lib/jenkins/.ssh/config" do
-    source "ssh_config.erb"
+    source "/home/vagrant/sync/files/ssh_config"
     mode '0400'
     owner 'jenkins'
     action :create

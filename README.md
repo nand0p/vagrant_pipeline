@@ -1,6 +1,10 @@
 # vagrant_pipeline
 
-configures vagrant vm with centos7 via ansible provisioner.
+- Configures vagrant vm with jenkins on centos7.
 
-installs and configures jenkins via seed and job dsl for 
-automating code deployment pipelines.
+- Supports both ansible or chef_zero provisioners.
+
+- Installs and configures jenkins via seed and job dsl for
+  automating code deployment pipelines.
+
+- Works locally with virtualbox provider.

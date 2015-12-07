@@ -8,7 +8,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     pipeline.berkshelf.enabled = true
     pipeline.vm.box = "centos/7"
     pipeline.vm.hostname = "pipeline-chef"
-    pipeline.vm.network "forwarded_port", guest: 9999, host: 9999
+    pipeline.vm.network "forwarded_port", guest: 8080, host: 9999
     pipeline.vm.synced_folder ".", "sync", disabled: true
     pipeline.vm.provider "virtualbox" do |vbox|
       vbox.memory = "1024"
@@ -20,7 +20,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
           'jdk_version' => '7'
         },
         'vagrant_jenkins_wrapper' => {
-          'pipeline' => 'hex7'
+          'pipeline' => 'hex7',
+          'jenkins_port' => '8080',
+          'jenkins_home' => '/var/lib/jenkins',
+          'jenkins_user' => 'jenkins'
         }
       }
       chef.run_list = [
