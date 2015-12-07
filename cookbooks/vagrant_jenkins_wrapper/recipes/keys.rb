@@ -3,10 +3,14 @@ directory "/var/lib/jenkins/.ssh" do
   mode '0700'
   action :create
 end
+execute "generate ssh skys for jenkins" do
+  user 'jenkins'
+  creates '/var/lib/jenkins/.ssh/id_rsa.pub'
+  command 'ssh-keygen -t rsa -q -f /var/lib/jenkins/.ssh/id_rsa -P ""'
+end
 template "/var/lib/jenkins/.ssh/config" do
-    source "/home/vagrant/sync/files/ssh_config"
+    source 'ssh_config.erb'
     mode '0400'
     owner 'jenkins'
     action :create
 end
-
