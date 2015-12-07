@@ -1,9 +1,6 @@
 job('deploy_hex7') {
     scm {
-        git {
-            github('nand0p/hex7')
-            wipeOutWorkspace()
-        }
+        github('nand0p/hex7')
     }
     steps {
         shell('echo "ship it"')
@@ -12,13 +9,7 @@ job('deploy_hex7') {
 
 job('deploy_damnswank') {
     scm {
-        git {
-            remote {
-                url('git@github.com:nand0p/damnswank.git')
-                branch('master')
-            }
-            wipeOutWorkspace()
-        }
+        github('nand0p/damnswank')
     }
     steps {
         shell('echo "ship it"')
