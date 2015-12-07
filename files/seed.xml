@@ -3,8 +3,11 @@
   <actions/>
   <description></description>
   <keepDependencies>false</keepDependencies>
-  <properties/>
-  <scm class="hudson.scm.NullSCM"/>
+  <properties>
+      <com.coravy.hudson.plugins.github.GithubProjectProperty>
+          <projectUrl>https://github.com/nand0p/vagrant_pipeline/</projectUrl>
+      </com.coravy.hudson.plugins.github.GithubProjectProperty>
+  </properties>
   <canRoam>true</canRoam>
   <disabled>false</disabled>
   <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
@@ -14,7 +17,7 @@
   <builders>
     <hudson.tasks.Shell>
       <command>
-git clone https://github.com/nand0p/vagrant_pipeline.git
+cat vagrant_pipeline/files/seed.xml
 cat vagrant_pipeline/files/jobs.dsl
 cat /var/lib/jenkins/.ssh/id_rsa.pub
       </command>
