@@ -112,36 +112,11 @@
     - pause: seconds=10
       when: jenkins_init.changed
 
-    - name: write out jenkins dsl
-      template:
-        src: templates/jobs.dsl.j2
-        dest: /tmp/jenkins-jobs.dsl
-        mode: 0644
-      sudo: yes
-      sudo_user: jenkins
-      when: jenkins_init.changed
-
-    - name: write out jenkins seed
-      template:
-        src: templates/seed.xml.j2
-        dest: /tmp/jenkins-seed.xml
-        mode: 0644
-      sudo: yes
-      sudo_user: jenkins
-      when: jenkins_init.changed
-
-    - name: fetch seed xml
-      fetch:
-        src: /tmp/jenkins-seed.xml
-        dest: /tmp/jenkins-seed-local.xml
-        flat: yes
-      when: jenkins_init.changed
-
     - name: jenkins load seed job
       uri:
         url: http://{{ jenkins.host }}:{{ jenkins.port }}/createItem?name=seed
         method: POST
-        body: "{{ lookup('file', '/tmp/jenkins-seed-local.xml') }}"
+        body: "{{ lookup('file', 'files/seed.xml') }}"
         HEADER_Content-Type: "application/xml"
         status_code: 200,201
       register: jenkins_seed_load

@@ -1,10 +1,7 @@
 job('deploy_hex7') {
     scm {
         git {
-            remote {
-                url('git@github.com:nand0p/hex7.git')
-                branch('master')
-            }
+            github('nand0p/hex7')
             wipeOutWorkspace()
         }
     }

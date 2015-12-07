@@ -14,14 +14,13 @@
   <builders>
     <hudson.tasks.Shell>
       <command>
-cat /var/lib/jenkins/jobs/seed/config.xml
-cp /tmp/jenkins-jobs.dsl .
-cat jenkins-jobs.dsl
+git clone https://github.com/nand0p/vagrant_pipeline.git
+cat vagrant_pipeline/files/jobs.dsl
 cat /var/lib/jenkins/.ssh/id_rsa.pub
       </command>
     </hudson.tasks.Shell>
     <javaposse.jobdsl.plugin.ExecuteDslScripts plugin="job-dsl@1.39">
-      <targets>jenkins-jobs.dsl</targets>
+      <targets>vagrant_pipeline/files/jobs.dsl</targets>
       <usingScriptText>false</usingScriptText>
       <ignoreExisting>false</ignoreExisting>
       <removedJobAction>IGNORE</removedJobAction>
