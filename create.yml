@@ -161,3 +161,15 @@
     - debug: var=jenkins_seed_build
       when: debug_on is defined and debug_on
 
+    - name: make ansible dir
+      file:
+        path=/etc/ansible
+        state=directory
+        mode=0755
+      sudo: yes
+
+    - name: populate ansible hosts
+      template:
+        src: templates/ansible_hosts.j2
+        dest: /etc/ansible/hosts
+      sudo: yes
