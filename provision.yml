@@ -107,7 +107,7 @@
       register: jenkins_restart
       when: jenkins_init.changed
 
-    - pause: seconds=10
+    - pause: seconds=60
       when: jenkins_init.changed
 
     - name: jenkins load seed job
